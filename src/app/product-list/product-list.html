@@ -1,0 +1,43 @@
+<div class="product-list-container">
+  <div class="actions-container">
+    <input type="text" placeholder="Search" class="search-input" />
+    <button [routerLink]="['/products/register']">Agregar producto</button>
+  </div>
+  <div class="table">
+    <table class="products-table">
+      <thead>
+        <tr>
+          <th>Logo</th>
+          <th>Nombre del producto</th>
+          <th>Descripción</th>
+          <th>Fecha de liberación</th>
+          <th>Fecha de reestructuración</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Alfreds Futterkiste</td>
+          <td>Maria Anders</td>
+          <td>Germany</td>
+          <td>Germany</td>
+          <td>Germany</td>
+        </tr>
+        <tr>
+          <td>Germany</td>
+          <td>Germany</td>
+          <td>Centro comercial Moctezuma</td>
+          <td>Francisco Chang</td>
+          <td>Mexico</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="results-container">
+      <p class="results-counter">5 Resultados</p>
+      <select name="" id="">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+      </select>
+    </div>
+  </div>
+</div>
