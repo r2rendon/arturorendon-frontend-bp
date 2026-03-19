@@ -30,8 +30,8 @@ button {
   min-width: 64px;
   box-sizing: border-box;
 
-  background-color: #1976d2;
-  color: #fff;
+  background-color: #f6df66;
+  color: black;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -50,7 +50,7 @@ button {
 }
 
 button:hover {
-  background-color: #1565c0;
+  background-color: #f1c40f;
   box-shadow:
     0px 2px 4px -1px rgba(0, 0, 0, 0.2),
     0px 4px 5px 0px rgba(0, 0, 0, 0.14),

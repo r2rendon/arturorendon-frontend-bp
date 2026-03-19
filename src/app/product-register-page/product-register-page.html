@@ -1,1 +1,89 @@
-<p>product-register-page works!</p>
+<div class="register-page">
+  <div class="register-card">
+    <h2>Formulario de Registro</h2>
+
+    <form class="register-form" [formGroup]="form" (submit)="onSubmit($event)">
+      <div class="form-grid">
+        <div class="field">
+          <label for="id">ID</label>
+          <input
+            id="id"
+            formControlName="id"
+            type="text"
+            class="input"
+            placeholder="123"
+            [class.input--error]="isInvalid('id')"
+          />
+          <span class="help" *ngIf="isInvalid('id')">ID no válida</span>
+        </div>
+
+        <div class="field">
+          <label for="nombre">Nombre</label>
+          <input
+            id="nombre"
+            formControlName="nombre"
+            type="text"
+            class="input"
+            placeholder="Tarjeta Crédito"
+          />
+        </div>
+
+        <div class="field">
+          <label for="descripcion">Descripción</label>
+          <textarea
+            id="descripcion"
+            formControlName="descripcion"
+            class="input input--textarea"
+            placeholder=""
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label for="logo">Logo</label>
+          <input
+            id="logo"
+            formControlName="logo"
+            type="text"
+            class="input"
+            placeholder="https://yoururl.com/image.jpg"
+            [class.input--error]="isInvalid('logo')"
+          />
+          <span class="help" *ngIf="isInvalid('logo')">Este campo es requerido</span>
+        </div>
+
+        <div class="field">
+          <label for="fechaLiberacion">Fecha de Liberación</label>
+          <input
+            id="fechaLiberacion"
+            formControlName="fechaLiberacion"
+            type="date"
+            class="input"
+            [class.input--error]="isInvalid('fechaLiberacion')"
+          />
+          <span class="help help--tight" *ngIf="isInvalid('fechaLiberacion')"
+            >Este campo es requerido</span
+          >
+        </div>
+
+        <div class="field">
+          <label for="fechaRevision">Fecha de Revisión</label>
+          <input
+            id="fechaRevision"
+            formControlName="fechaRevision"
+            type="date"
+            class="input"
+            [class.input--error]="isInvalid('fechaRevision')"
+          />
+          <span class="help help--tight" *ngIf="isInvalid('fechaRevision')"
+            >Este campo es requerido</span
+          >
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="reset-button" (click)="onReset()">Reiniciar</button>
+        <button type="submit" class="submit-button">Enviar</button>
+      </div>
+    </form>
+  </div>
+</div>

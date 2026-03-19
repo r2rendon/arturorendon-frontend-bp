@@ -1,16 +1,17 @@
 .header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 8px 0
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 8px 0;
 }
 
 .header h1 {
-    color: darkblue;
-    margin-left: 15px;
+  color: darkblue;
+  margin-left: 15px;
+  cursor: pointer;
 }
 
 .header span {
-    font-size: 35px;
-    color: darkblue;
+  font-size: 35px;
+  color: darkblue;
 }
