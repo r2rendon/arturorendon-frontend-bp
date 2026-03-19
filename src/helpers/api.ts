@@ -1,5 +1,5 @@
-import { Product } from '../../types/api';
-import { ProductRegisterFormValue } from '../../types/form';
+import { Product } from '../types/api';
+import { ProductRegisterFormValue } from '../types/form';
 
 export function mapProductRegisterFormToProduct(value: ProductRegisterFormValue): Product {
   return {

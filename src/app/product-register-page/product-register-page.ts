@@ -3,10 +3,10 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApiService } from '../api';
 import { ProductRegisterFormControls } from '../../types/form';
-import { mapProductRegisterFormToProduct } from '../helpers/api';
-import { provideToastr, ToastrModule, ToastrService } from 'ngx-toastr';
-import { bootstrapApplication } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Product } from '../../types/api';
+import { mapProductRegisterFormToProduct } from '../../helpers/api';
 
 @Component({
   selector: 'app-product-register-page',
@@ -16,10 +16,13 @@ import { Router } from '@angular/router';
   standalone: true,
 })
 export class ProductRegisterPage {
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
 
   submitted = false;
   toastr = inject(ToastrService);
+  isEditMode = false;
+  private editingProductId: string | null = null;
 
   form = new FormGroup<ProductRegisterFormControls>({
     id: new FormControl('', {
@@ -44,6 +47,20 @@ export class ProductRegisterPage {
 
   constructor(private apiService: ApiService) {}
 
+  ngOnInit() {
+    this.route.paramMap.subscribe((params) => {
+      const id = params.get('id');
+      this.isEditMode = !!id;
+      this.editingProductId = id;
+
+      if (id) {
+        this.prefillForEdit(id);
+      } else {
+        this.form.controls.id.enable();
+      }
+    });
+  }
+
   isInvalid(controlName: keyof ProductRegisterFormControls): boolean {
     const control = this.form.controls[controlName];
     return control.invalid && (control.touched || this.submitted);
@@ -60,6 +77,23 @@ export class ProductRegisterPage {
     }
 
     const productData = mapProductRegisterFormToProduct(this.form.getRawValue());
+    if (this.isEditMode && this.editingProductId) {
+      this.apiService.updateProduct(this.editingProductId, productData).subscribe({
+        next: (response) => {
+          console.log(response);
+          this.toastr.success('¡Producto actualizado exitosamente!');
+          this.router.navigate(['products', this.editingProductId]);
+        },
+        error: (error) => {
+          console.error(error);
+          this.toastr.error(
+            'Lo sentimos, el producto no pudo ser actualizado. Favor intentar nuevamente.',
+          );
+        },
+      });
+      return;
+    }
+
     this.apiService.postProducts(productData).subscribe({
       next: (response) => {
         console.log(response);
@@ -87,8 +121,35 @@ export class ProductRegisterPage {
       fechaRevision: '',
     });
   }
-}
 
-bootstrapApplication(ProductRegisterPage, {
-  providers: [provideToastr()],
-});
+  private prefillForEdit(id: string) {
+    this.apiService.getProduct(id).subscribe({
+      next: (response) => {
+        console.log(response);
+        if (!response) {
+          this.toastr.error('Producto no encontrado.');
+          this.router.navigate(['products']);
+          return;
+        }
+
+        this.patchFormFromProduct(response);
+        this.form.controls.id.disable();
+      },
+      error: (error) => {
+        console.error(error);
+        this.toastr.error('Lo sentimos, no se pudo cargar el producto para editar.');
+      },
+    });
+  }
+
+  private patchFormFromProduct(product: Product) {
+    this.form.patchValue({
+      id: product.id,
+      nombre: product.name,
+      descripcion: product.description,
+      logo: product.logo,
+      fechaLiberacion: product.date_release,
+      fechaRevision: product.date_revision,
+    });
+  }
+}

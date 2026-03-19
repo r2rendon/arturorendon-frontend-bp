@@ -1,10 +1,88 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ApiService } from '../api';
+import { Product } from '../../types/api';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-product-list',
-  imports: [RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
 })
-export class ProductList {}
+export class ProductList {
+  products: Product[] = [];
+  toastr = inject(ToastrService);
+  private readonly route = inject(ActivatedRoute);
+
+  constructor(private apiService: ApiService) {}
+
+  // Detail mode (read-only)
+  selectedProductId = signal<string | null>(null);
+  selectedProduct = computed(() => {
+    const id = this.selectedProductId();
+    if (!id) return null;
+    return this.products.find((p) => p.id === id) ?? null;
+  });
+  isDetailMode = computed(() => this.selectedProductId() !== null);
+
+  // Pagination (frontend-only)
+  pageSize = 5;
+  currentPage = 1;
+
+  ngOnInit() {
+    this.route.paramMap.subscribe((params) => {
+      this.selectedProductId.set(params.get('id'));
+    });
+    this.fetchData();
+  }
+
+  fetchData() {
+    this.apiService.getProducts().subscribe({
+      next: (response) => {
+        this.products = response.data;
+        this.ensureValidCurrentPage();
+      },
+      error: (err) => {
+        console.error('GET Error:', err);
+        this.toastr.error(
+          'Lo sentimos, la lista de productos no pudo ser cargada. Intenta de nuevo mas tarde.',
+        );
+      },
+    });
+  }
+
+  get totalResults(): number {
+    return this.products.length;
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.totalResults / this.pageSize));
+  }
+
+  get visibleProducts(): Product[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    return this.products.slice(start, end);
+  }
+
+  onPageSizeChange(event: Event) {
+    const value = Number((event.target as HTMLSelectElement).value);
+    this.pageSize = Number.isFinite(value) && value > 0 ? value : 5;
+    this.currentPage = 1;
+  }
+
+  prevPage() {
+    this.currentPage = Math.max(1, this.currentPage - 1);
+  }
+
+  nextPage() {
+    this.currentPage = Math.min(this.totalPages, this.currentPage + 1);
+  }
+
+  private ensureValidCurrentPage() {
+    this.currentPage = Math.min(this.currentPage, this.totalPages);
+    this.currentPage = Math.max(1, this.currentPage);
+  }
+}

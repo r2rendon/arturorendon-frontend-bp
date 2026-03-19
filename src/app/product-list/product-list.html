@@ -1,43 +1,94 @@
 <div class="product-list-container">
-  <div class="actions-container">
-    <input type="text" placeholder="Search" class="search-input" />
-    <button [routerLink]="['/products/register']">Agregar producto</button>
-  </div>
-  <div class="table">
-    <table class="products-table">
-      <thead>
-        <tr>
-          <th>Logo</th>
-          <th>Nombre del producto</th>
-          <th>Descripción</th>
-          <th>Fecha de liberación</th>
-          <th>Fecha de reestructuración</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Alfreds Futterkiste</td>
-          <td>Maria Anders</td>
-          <td>Germany</td>
-          <td>Germany</td>
-          <td>Germany</td>
-        </tr>
-        <tr>
-          <td>Germany</td>
-          <td>Germany</td>
-          <td>Centro comercial Moctezuma</td>
-          <td>Francisco Chang</td>
-          <td>Mexico</td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="results-container">
-      <p class="results-counter">5 Resultados</p>
-      <select name="" id="">
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="20">20</option>
-      </select>
+  <ng-container *ngIf="isDetailMode(); else listMode">
+    <div class="table">
+      <ng-container *ngIf="selectedProduct() as product; else notFound">
+        <div class="detail-header">
+          <img class="product-logo" [src]="product.logo" [alt]="product.name" />
+          <div class="detail-title">
+            <h2 class="detail-name">{{ product.name }}</h2>
+            <p class="detail-id">ID: {{ product.id }}</p>
+          </div>
+        </div>
+
+        <div class="detail-body">
+          <h3>Descripción</h3>
+          <p class="detail-description">{{ product.description }}</p>
+
+          <div class="detail-actions">
+            <button type="button" [routerLink]="['/products', product.id, 'edit']">Editar</button>
+            <button type="button" [routerLink]="['/products']">Volver</button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #notFound>
+        <p class="not-found">Producto no encontrado.</p>
+        <button type="button" [routerLink]="['/products']">Volver</button>
+      </ng-template>
     </div>
-  </div>
+  </ng-container>
+
+  <ng-template #listMode>
+    <div class="actions-container">
+      <input type="text" placeholder="Search" class="search-input" />
+      <button [routerLink]="['/products/register']">Agregar producto</button>
+    </div>
+    <div class="table">
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th>Logo</th>
+            <th>Nombre del producto</th>
+            <th>Descripción</th>
+            <th>Fecha de liberación</th>
+            <th>Fecha de reestructuración</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of visibleProducts; track $index) {
+            <tr class="clickable-row" [routerLink]="['/products', product.id]">
+              <td>
+                <img class="product-logo" [src]="product.logo" [alt]="product.name" />
+              </td>
+              <td class="cell-ellipsis cell-name" title="{{ product.name }}">{{ product.name }}</td>
+              <td class="cell-ellipsis cell-description" title="{{ product.description }}">
+                {{ product.description }}
+              </td>
+              <td>{{ product.date_release }}</td>
+              <td>{{ product.date_revision }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <div class="results-container">
+        <p class="results-counter">{{ totalResults }} Resultados</p>
+
+        <div class="pager">
+          <button
+            type="button"
+            class="pager-button"
+            (click)="prevPage()"
+            [disabled]="currentPage === 1"
+          >
+            Prev
+          </button>
+          <span class="pager-status">Página {{ currentPage }} / {{ totalPages }}</span>
+          <button
+            type="button"
+            class="pager-button"
+            (click)="nextPage()"
+            [disabled]="currentPage === totalPages"
+          >
+            Next
+          </button>
+        </div>
+
+        <select [value]="pageSize" (change)="onPageSizeChange($event)">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+        </select>
+      </div>
+    </div>
+  </ng-template>
 </div>

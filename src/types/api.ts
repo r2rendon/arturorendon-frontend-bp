@@ -6,3 +6,7 @@ export interface Product {
   date_release: string; // 2025-01-01
   date_revision: string;
 }
+
+export interface GetProducts {
+  data: Product[];
+}

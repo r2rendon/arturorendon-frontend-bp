@@ -1,6 +1,6 @@
 <div class="register-page">
   <div class="register-card">
-    <h2>Formulario de Registro</h2>
+    <h2>{{ isEditMode ? 'Editar producto' : 'Formulario de Registro' }}</h2>
 
     <form class="register-form" [formGroup]="form" (submit)="onSubmit($event)">
       <div class="form-grid">
@@ -13,6 +13,7 @@
             class="input"
             placeholder="123"
             [class.input--error]="isInvalid('id')"
+            [readonly]="isEditMode"
           />
           <span class="help" *ngIf="isInvalid('id')">ID no válida</span>
         </div>
@@ -82,7 +83,7 @@
 
       <div class="actions">
         <button type="button" class="reset-button" (click)="onReset()">Reiniciar</button>
-        <button type="submit" class="submit-button">Enviar</button>
+        <button type="submit" class="submit-button">{{ isEditMode ? 'Guardar' : 'Enviar' }}</button>
       </div>
     </form>
   </div>

@@ -4,12 +4,16 @@ import { ProductRegisterPage } from './product-register-page/product-register-pa
 
 export const routes: Routes = [
   {
-    path: 'products',
-    component: ProductList,
-  },
-  {
     path: 'products/register',
     component: ProductRegisterPage,
+  },
+  {
+    path: 'products/:id/edit',
+    component: ProductRegisterPage,
+  },
+  {
+    path: 'products',
+    component: ProductList,
   },
   {
     path: '',
