@@ -1,11 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
+import { of } from 'rxjs';
 
 import { ProductRegisterPage } from './product-register-page';
+import { ApiService } from '../api';
 
 describe('ProductRegisterPage', () => {
   let component: ProductRegisterPage;
   let fixture: ComponentFixture<ProductRegisterPage>;
+  let apiService: ApiService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -14,6 +17,7 @@ describe('ProductRegisterPage', () => {
 
     fixture = TestBed.createComponent(ProductRegisterPage);
     component = fixture.componentInstance;
+    apiService = TestBed.inject(ApiService);
     await fixture.whenStable();
   });
 
@@ -40,8 +44,18 @@ describe('ProductRegisterPage', () => {
     expect(component.submitted).toBe(true);
   });
 
-  it('onSubmit alerts when form is valid', () => {
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+  it('onSubmit posts product when form is valid', () => {
+    const postSpy = vi.spyOn(apiService, 'postProducts').mockReturnValue(
+      of({
+        id: '123',
+        name: 'Maria Anders',
+        description: 'Germany',
+        logo: 'https://example.com/logo.png',
+        date_release: '2023-02-22',
+        date_revision: '2024-02-22',
+      }),
+    );
+
     component.form.setValue({
       id: '123',
       nombre: 'Maria Anders',
@@ -56,7 +70,14 @@ describe('ProductRegisterPage', () => {
 
     expect(preventDefaultSpy).toHaveBeenCalled();
     expect(component.form.valid).toBe(true);
-    expect(alertSpy).toHaveBeenCalledWith('hola');
+    expect(postSpy).toHaveBeenCalledWith({
+      id: '123',
+      name: 'Maria Anders',
+      description: 'Germany',
+      logo: 'https://example.com/logo.png',
+      date_release: '2023-02-22',
+      date_revision: '2024-02-22',
+    });
   });
 
   it('onReset resets submitted flag and restores default dates', () => {

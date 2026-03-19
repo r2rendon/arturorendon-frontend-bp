@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ApiService } from '../api';
+import { ProductRegisterFormControls } from '../../types/form';
+import { mapProductRegisterFormToProduct } from '../helpers/api';
 
 @Component({
   selector: 'app-product-register-page',
@@ -11,13 +14,13 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 export class ProductRegisterPage {
   submitted = false;
 
-  form = new FormGroup({
+  form = new FormGroup<ProductRegisterFormControls>({
     id: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required, Validators.pattern(/^[0-9]+$/)],
     }),
-    nombre: new FormControl('', { nonNullable: true }),
-    descripcion: new FormControl('', { nonNullable: true }),
+    nombre: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    descripcion: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     logo: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required],
@@ -32,9 +35,9 @@ export class ProductRegisterPage {
     }),
   });
 
-  isInvalid(
-    controlName: 'id' | 'nombre' | 'descripcion' | 'logo' | 'fechaLiberacion' | 'fechaRevision',
-  ): boolean {
+  constructor(private apiService: ApiService) {}
+
+  isInvalid(controlName: keyof ProductRegisterFormControls): boolean {
     const control = this.form.controls[controlName];
     return control.invalid && (control.touched || this.submitted);
   }
@@ -46,10 +49,11 @@ export class ProductRegisterPage {
     this.form.markAllAsTouched();
 
     if (this.form.invalid) {
-      return; // Error handling: show validation states/messages.
+      return;
     }
 
-    alert('hola');
+    const productData = mapProductRegisterFormToProduct(this.form.getRawValue());
+    this.apiService.postProducts(productData).subscribe();
   }
 
   onReset(): void {
