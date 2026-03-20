@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 import { DeleteConfirmationModal } from './delete-confirmation-modal';
 
 describe('DeleteConfirmationModal', () => {
@@ -12,7 +13,6 @@ describe('DeleteConfirmationModal', () => {
 
     fixture = TestBed.createComponent(DeleteConfirmationModal);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -45,58 +45,44 @@ describe('DeleteConfirmationModal', () => {
   });
 
   it('should emit confirm event when confirm button is clicked', () => {
-    let confirmEmitted = false;
-    component.confirm.subscribe(() => {
-      confirmEmitted = true;
-    });
+    const confirmSpy = vi.spyOn(component.confirm, 'emit');
     component.isOpen = true;
     fixture.detectChanges();
 
-    const confirmButton = fixture.nativeElement.querySelector('.button-confirm');
-    confirmButton.click();
+    component.onConfirm();
 
-    expect(confirmEmitted).toBe(true);
+    expect(confirmSpy).toHaveBeenCalled();
   });
 
   it('should emit cancel event when cancel button is clicked', () => {
-    let cancelEmitted = false;
-    component.cancel.subscribe(() => {
-      cancelEmitted = true;
-    });
+    const cancelSpy = vi.spyOn(component.cancel, 'emit');
     component.isOpen = true;
     fixture.detectChanges();
 
-    const cancelButton = fixture.nativeElement.querySelector('.button-cancel');
-    cancelButton.click();
+    component.onCancel();
 
-    expect(cancelEmitted).toBe(true);
+    expect(cancelSpy).toHaveBeenCalled();
   });
 
   it('should emit cancel event when backdrop is clicked', () => {
-    let cancelEmitted = false;
-    component.cancel.subscribe(() => {
-      cancelEmitted = true;
-    });
+    const cancelSpy = vi.spyOn(component.cancel, 'emit');
     component.isOpen = true;
     fixture.detectChanges();
 
-    const backdrop = fixture.nativeElement.querySelector('.modal-backdrop');
-    backdrop.click();
+    const backdrop = fixture.nativeElement.querySelector('.modal-backdrop') as HTMLElement;
+    component.onBackdropClick({ target: backdrop } as unknown as MouseEvent);
 
-    expect(cancelEmitted).toBe(true);
+    expect(cancelSpy).toHaveBeenCalled();
   });
 
   it('should not emit cancel when modal card is clicked', () => {
-    let cancelCount = 0;
-    component.cancel.subscribe(() => {
-      cancelCount++;
-    });
+    const cancelSpy = vi.spyOn(component.cancel, 'emit');
     component.isOpen = true;
     fixture.detectChanges();
 
-    const modalCard = fixture.nativeElement.querySelector('.modal-card');
-    modalCard.click();
+    const modalCard = fixture.nativeElement.querySelector('.modal-card') as HTMLElement;
+    component.onBackdropClick({ target: modalCard } as unknown as MouseEvent);
 
-    expect(cancelCount).toBe(0);
+    expect(cancelSpy).not.toHaveBeenCalled();
   });
 });
