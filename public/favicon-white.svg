@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Banco payments icon">
+  <rect width="64" height="64" rx="14" fill="#0d1b6b" />
+  <path
+    d="M14 18.5A4.5 4.5 0 0 1 18.5 14h27A4.5 4.5 0 0 1 50 18.5v4A4.5 4.5 0 0 1 45.5 27h-27A4.5 4.5 0 0 1 14 22.5zm0 16A4.5 4.5 0 0 1 18.5 30h27A4.5 4.5 0 0 1 50 34.5v11A4.5 4.5 0 0 1 45.5 50h-27A4.5 4.5 0 0 1 14 45.5zM18 20.5h28v2H18zm4 15.5h10v2H22zm0 5h14v2H22z"
+    fill="#fff"
+  />
+</svg>
