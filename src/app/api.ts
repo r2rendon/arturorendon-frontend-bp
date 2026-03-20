@@ -82,4 +82,15 @@ export class ApiService {
         ),
       );
   }
+
+  verifyProductId(id: string): Observable<boolean> {
+    return this.http.get<boolean>(`${API_ENDPOINTS.getProducts}/verification/${id}`).pipe(
+      catchError(() => {
+        return new Observable<boolean>((observer) => {
+          observer.next(false);
+          observer.complete();
+        });
+      }),
+    );
+  }
 }

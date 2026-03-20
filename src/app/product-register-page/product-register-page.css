@@ -140,6 +140,7 @@
 }
 
 .delete-button {
+  color: white !important;
   background-color: #DC143C !important;
 }
 
