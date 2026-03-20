@@ -45,7 +45,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (product of visibleProducts; track $index) {
+          @for (product of visibleProducts(); track product.id) {
             <tr class="clickable-row" [routerLink]="['/products', product.id]">
               <td>
                 <img class="product-logo" [src]="product.logo" [alt]="product.name" />
@@ -68,22 +68,22 @@
             type="button"
             class="pager-button"
             (click)="prevPage()"
-            [disabled]="currentPage === 1"
+            [disabled]="currentPage() === 1"
           >
             Prev
           </button>
-          <span class="pager-status">Página {{ currentPage }} / {{ totalPages }}</span>
+          <span class="pager-status">Página {{ currentPage() }} / {{ totalPages }}</span>
           <button
             type="button"
             class="pager-button"
             (click)="nextPage()"
-            [disabled]="currentPage === totalPages"
+            [disabled]="currentPage() === totalPages"
           >
             Next
           </button>
         </div>
 
-        <select [value]="pageSize" (change)="onPageSizeChange($event)">
+        <select [value]="pageSize()" (change)="onPageSizeChange($event)">
           <option value="5">5</option>
           <option value="10">10</option>
           <option value="20">20</option>

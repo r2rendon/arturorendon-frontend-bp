@@ -12,7 +12,6 @@ import { ToastrService } from 'ngx-toastr';
   styleUrl: './product-list.css',
 })
 export class ProductList {
-  products: Product[] = [];
   toastr = inject(ToastrService);
   private readonly route = inject(ActivatedRoute);
 
@@ -23,13 +22,14 @@ export class ProductList {
   selectedProduct = computed(() => {
     const id = this.selectedProductId();
     if (!id) return null;
-    return this.products.find((p) => p.id === id) ?? null;
+    return this.products().find((p) => p.id === id) ?? null;
   });
   isDetailMode = computed(() => this.selectedProductId() !== null);
 
   // Pagination (frontend-only)
-  pageSize = 5;
-  currentPage = 1;
+  products = signal<Product[]>([]);
+  pageSize = signal(5);
+  currentPage = signal(1);
 
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
@@ -41,7 +41,7 @@ export class ProductList {
   fetchData() {
     this.apiService.getProducts().subscribe({
       next: (response) => {
-        this.products = response.data;
+        this.products.set(response.data);
         this.ensureValidCurrentPage();
       },
       error: (err) => {
@@ -54,35 +54,34 @@ export class ProductList {
   }
 
   get totalResults(): number {
-    return this.products.length;
+    return this.products().length;
   }
 
   get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalResults / this.pageSize));
+    return Math.max(1, Math.ceil(this.totalResults / this.pageSize()));
   }
 
-  get visibleProducts(): Product[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    return this.products.slice(start, end);
-  }
+  visibleProducts = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    const end = start + this.pageSize();
+    return this.products().slice(start, end);
+  });
 
   onPageSizeChange(event: Event) {
     const value = Number((event.target as HTMLSelectElement).value);
-    this.pageSize = Number.isFinite(value) && value > 0 ? value : 5;
-    this.currentPage = 1;
+    this.pageSize.set(Number.isFinite(value) && value > 0 ? value : 5);
+    this.currentPage.set(1);
   }
 
   prevPage() {
-    this.currentPage = Math.max(1, this.currentPage - 1);
+    this.currentPage.update((page) => Math.max(1, page - 1));
   }
 
   nextPage() {
-    this.currentPage = Math.min(this.totalPages, this.currentPage + 1);
+    this.currentPage.update((page) => Math.min(this.totalPages, page + 1));
   }
 
   private ensureValidCurrentPage() {
-    this.currentPage = Math.min(this.currentPage, this.totalPages);
-    this.currentPage = Math.max(1, this.currentPage);
+    this.currentPage.update((page) => Math.max(1, Math.min(page, this.totalPages)));
   }
 }
