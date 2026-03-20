@@ -7,6 +7,8 @@ import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Product } from '../../types/api';
 import { mapProductRegisterFormToProduct } from '../../helpers/api';
+import { firstValueFrom } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-product-register-page',
@@ -48,7 +50,7 @@ export class ProductRegisterPage {
   constructor(private apiService: ApiService) {}
 
   ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
+    this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       const id = params.get('id');
       this.isEditMode = !!id;
       this.editingProductId = id;
@@ -66,7 +68,7 @@ export class ProductRegisterPage {
     return control.invalid && (control.touched || this.submitted);
   }
 
-  onSubmit(event: Event): void {
+  async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
 
     this.submitted = true;
@@ -78,35 +80,18 @@ export class ProductRegisterPage {
 
     const productData = mapProductRegisterFormToProduct(this.form.getRawValue());
     if (this.isEditMode && this.editingProductId) {
-      this.apiService.updateProduct(this.editingProductId, productData).subscribe({
-        next: (response) => {
-          console.log(response);
-          this.toastr.success('¡Producto actualizado exitosamente!');
-          this.router.navigate(['products', this.editingProductId]);
-        },
-        error: (error) => {
-          console.error(error);
-          this.toastr.error(
-            'Lo sentimos, el producto no pudo ser actualizado. Favor intentar nuevamente.',
-          );
-        },
-      });
+      await firstValueFrom(this.apiService.updateProduct(this.editingProductId, productData));
+
+      this.toastr.success('¡Producto actualizado exitosamente!');
+      this.router.navigate(['products', this.editingProductId]);
       return;
     }
 
-    this.apiService.postProducts(productData).subscribe({
-      next: (response) => {
-        console.log(response);
-        this.toastr.success('¡Producto agregado exitosamente!');
-        this.router.navigate(['products']);
-      },
-      error: (error) => {
-        console.error(error);
-        this.toastr.error(
-          'Lo sentimos, el producto no pudo ser agregado. Favor intentar nuevamente.',
-        );
-      },
-    });
+    const response = await firstValueFrom(this.apiService.postProducts(productData));
+
+    console.log(response);
+    this.toastr.success('¡Producto agregado exitosamente!');
+    this.router.navigate(['products']);
   }
 
   onReset(): void {
@@ -122,24 +107,17 @@ export class ProductRegisterPage {
     });
   }
 
-  private prefillForEdit(id: string) {
-    this.apiService.getProduct(id).subscribe({
-      next: (response) => {
-        console.log(response);
-        if (!response) {
-          this.toastr.error('Producto no encontrado.');
-          this.router.navigate(['products']);
-          return;
-        }
+  private async prefillForEdit(id: string) {
+    const response = await firstValueFrom(this.apiService.getProduct(id));
 
-        this.patchFormFromProduct(response);
-        this.form.controls.id.disable();
-      },
-      error: (error) => {
-        console.error(error);
-        this.toastr.error('Lo sentimos, no se pudo cargar el producto para editar.');
-      },
-    });
+    if (!response) {
+      this.toastr.error('Producto no encontrado.');
+      this.router.navigate(['products']);
+      return;
+    }
+
+    this.patchFormFromProduct(response);
+    this.form.controls.id.disable();
   }
 
   private patchFormFromProduct(product: Product) {

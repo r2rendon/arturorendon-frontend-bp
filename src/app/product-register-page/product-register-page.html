@@ -15,7 +15,9 @@
             [class.input--error]="isInvalid('id')"
             [readonly]="isEditMode"
           />
-          <span class="help" *ngIf="isInvalid('id')">ID no válida</span>
+          @if (isInvalid('id')) {
+            <span class="help">Este campo es requerido</span>
+          }
         </div>
 
         <div class="field">
@@ -49,7 +51,9 @@
             placeholder="https://yoururl.com/image.jpg"
             [class.input--error]="isInvalid('logo')"
           />
-          <span class="help" *ngIf="isInvalid('logo')">Este campo es requerido</span>
+          @if (isInvalid('logo')) {
+            <span class="help">Este campo es requerido</span>
+          }
         </div>
 
         <div class="field">
@@ -61,9 +65,9 @@
             class="input"
             [class.input--error]="isInvalid('fechaLiberacion')"
           />
-          <span class="help help--tight" *ngIf="isInvalid('fechaLiberacion')"
-            >Este campo es requerido</span
-          >
+          @if (isInvalid('fechaLiberacion')) {
+            <span class="help">Este campo es requerido</span>
+          }
         </div>
 
         <div class="field">
@@ -75,14 +79,18 @@
             class="input"
             [class.input--error]="isInvalid('fechaRevision')"
           />
-          <span class="help help--tight" *ngIf="isInvalid('fechaRevision')"
-            >Este campo es requerido</span
-          >
+          @if (isInvalid('fechaRevision')) {
+            <span class="help">Este campo es requerido</span>
+          }
         </div>
       </div>
 
       <div class="actions">
-        <button type="button" class="reset-button" (click)="onReset()">Reiniciar</button>
+        @if (!isEditMode) {
+          <button type="button" class="reset-button" (click)="onReset()">Reiniciar</button>
+        } @else {
+          <button type="button" class="delete-button">Eliminar Producto</button>
+        }
         <button type="submit" class="submit-button">{{ isEditMode ? 'Guardar' : 'Enviar' }}</button>
       </div>
     </form>

@@ -46,7 +46,7 @@
         </thead>
         <tbody>
           @for (product of visibleProducts(); track product.id) {
-            <tr class="clickable-row" [routerLink]="['/products', product.id]">
+            <tr class="clickable-row" [routerLink]="[`/products/${product.id}/edit`]">
               <td>
                 <img class="product-logo" [src]="product.logo" [alt]="product.name" />
               </td>

@@ -4,6 +4,8 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../api';
 import { Product } from '../../types/api';
 import { ToastrService } from 'ngx-toastr';
+import { firstValueFrom } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-product-list',
@@ -32,25 +34,16 @@ export class ProductList {
   currentPage = signal(1);
 
   ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
+    this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       this.selectedProductId.set(params.get('id'));
     });
     this.fetchData();
   }
 
-  fetchData() {
-    this.apiService.getProducts().subscribe({
-      next: (response) => {
-        this.products.set(response.data);
-        this.ensureValidCurrentPage();
-      },
-      error: (err) => {
-        console.error('GET Error:', err);
-        this.toastr.error(
-          'Lo sentimos, la lista de productos no pudo ser cargada. Intenta de nuevo mas tarde.',
-        );
-      },
-    });
+  async fetchData() {
+    const response = await firstValueFrom(this.apiService.getProducts());
+    this.products.set(response.data);
+    this.ensureValidCurrentPage();
   }
 
   get totalResults(): number {

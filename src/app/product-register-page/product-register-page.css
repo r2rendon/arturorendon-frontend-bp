@@ -50,6 +50,12 @@
   color: #1f2a37;
 }
 
+.input:read-only {
+  background-color: #f5f5f5;
+  border-color: #ddd;
+  color: #888;
+}
+
 .input:focus {
   border-color: #b9c3d3;
   box-shadow: 0 0 0 3px rgba(185, 195, 211, 0.35);
@@ -99,6 +105,10 @@
 .reset-button:active {
   background-color: #cfcfcf !important;
   box-shadow: none !important;
+}
+
+.delete-button {
+  background-color: #DC143C !important;
 }
 
 @media (max-width: 768px) {
