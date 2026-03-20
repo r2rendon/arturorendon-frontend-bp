@@ -1,114 +1,126 @@
 <div class="register-page">
   <div class="register-card">
     <div class="header-with-back">
-      <span class="back-button" (click)="goBack()" title="Volver a la lista">←</span>
+      <span
+        class="back-button"
+        (click)="goBack()"
+        title="Volver a la lista"
+        [style.pointer-events]="isLoadingForm() ? 'auto' : null"
+        >←</span
+      >
       <h2>{{ isEditMode ? 'Editar producto' : 'Formulario de Registro' }}</h2>
     </div>
 
-    <form class="register-form" [formGroup]="form" (submit)="onSubmit($event)">
-      <div class="form-grid">
-        <div class="field">
-          <label for="id">ID</label>
-          <input
-            id="id"
-            formControlName="id"
-            type="text"
-            class="input"
-            placeholder="123"
-            [class.input--error]="isInvalid('id')"
-            [readonly]="isEditMode"
-          />
-          @if (isInvalid('id')) {
-            <span class="help">{{ getErrorMessage('id') }}</span>
-          }
+    @if (isEditMode && isLoadingForm()) {
+      <app-product-register-form-skeleton></app-product-register-form-skeleton>
+    } @else {
+      <form class="register-form" [formGroup]="form" (submit)="onSubmit($event)">
+        <div class="form-grid">
+          <div class="field">
+            <label for="id">ID</label>
+            <input
+              id="id"
+              formControlName="id"
+              type="text"
+              class="input"
+              placeholder="123"
+              [class.input--error]="isInvalid('id')"
+              [readonly]="isEditMode"
+            />
+            @if (isInvalid('id')) {
+              <span class="help">{{ getErrorMessage('id') }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="nombre">Nombre</label>
+            <input
+              id="nombre"
+              formControlName="nombre"
+              type="text"
+              class="input"
+              placeholder="Tarjeta Crédito"
+              [class.input--error]="isInvalid('nombre')"
+            />
+            @if (form.controls.nombre.invalid && (form.controls.nombre.touched || submitted)) {
+              <span class="help">{{ getErrorMessage('nombre') }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="descripcion">Descripción</label>
+            <textarea
+              id="descripcion"
+              formControlName="descripcion"
+              class="input input--textarea"
+              placeholder=""
+              [class.input--error]="isInvalid('descripcion')"
+            ></textarea>
+            @if (
+              form.controls.descripcion.invalid && (form.controls.descripcion.touched || submitted)
+            ) {
+              <span class="help">{{ getErrorMessage('descripcion') }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="logo">Logo</label>
+            <input
+              id="logo"
+              formControlName="logo"
+              type="text"
+              class="input"
+              placeholder="https://yoururl.com/image.jpg"
+              [class.input--error]="isInvalid('logo')"
+            />
+            @if (isInvalid('logo')) {
+              <span class="help">{{ getErrorMessage('logo') }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="fechaLiberacion">Fecha de Liberación</label>
+            <input
+              id="fechaLiberacion"
+              formControlName="fechaLiberacion"
+              type="date"
+              class="input"
+              [class.input--error]="isInvalid('fechaLiberacion')"
+              (change)="form.get('fechaRevision')?.updateValueAndValidity()"
+            />
+            @if (isInvalid('fechaLiberacion')) {
+              <span class="help">{{ getErrorMessage('fechaLiberacion') }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="fechaRevision">Fecha de Revisión</label>
+            <input
+              id="fechaRevision"
+              formControlName="fechaRevision"
+              type="date"
+              class="input"
+              [class.input--error]="isInvalid('fechaRevision')"
+            />
+            @if (isInvalid('fechaRevision')) {
+              <span class="help">{{ getErrorMessage('fechaRevision') }}</span>
+            }
+          </div>
         </div>
 
-        <div class="field">
-          <label for="nombre">Nombre</label>
-          <input
-            id="nombre"
-            formControlName="nombre"
-            type="text"
-            class="input"
-            placeholder="Tarjeta Crédito"
-            [class.input--error]="isInvalid('nombre')"
-          />
-          @if (form.controls.nombre.invalid && (form.controls.nombre.touched || submitted)) {
-            <span class="help">{{ getErrorMessage('nombre') }}</span>
+        <div class="actions">
+          @if (isEditMode) {
+            <button type="button" class="delete-button" (click)="openDeleteModal()">
+              Eliminar Producto
+            </button>
           }
-        </div>
-
-        <div class="field">
-          <label for="descripcion">Descripción</label>
-          <textarea
-            id="descripcion"
-            formControlName="descripcion"
-            class="input input--textarea"
-            placeholder=""
-            [class.input--error]="isInvalid('descripcion')"
-          ></textarea>
-          @if (
-            form.controls.descripcion.invalid && (form.controls.descripcion.touched || submitted)
-          ) {
-            <span class="help">{{ getErrorMessage('descripcion') }}</span>
-          }
-        </div>
-
-        <div class="field">
-          <label for="logo">Logo</label>
-          <input
-            id="logo"
-            formControlName="logo"
-            type="text"
-            class="input"
-            placeholder="https://yoururl.com/image.jpg"
-            [class.input--error]="isInvalid('logo')"
-          />
-          @if (isInvalid('logo')) {
-            <span class="help">{{ getErrorMessage('logo') }}</span>
-          }
-        </div>
-
-        <div class="field">
-          <label for="fechaLiberacion">Fecha de Liberación</label>
-          <input
-            id="fechaLiberacion"
-            formControlName="fechaLiberacion"
-            type="date"
-            class="input"
-            [class.input--error]="isInvalid('fechaLiberacion')"
-            (change)="form.get('fechaRevision')?.updateValueAndValidity()"
-          />
-          @if (isInvalid('fechaLiberacion')) {
-            <span class="help">{{ getErrorMessage('fechaLiberacion') }}</span>
-          }
-        </div>
-
-        <div class="field">
-          <label for="fechaRevision">Fecha de Revisión</label>
-          <input
-            id="fechaRevision"
-            formControlName="fechaRevision"
-            type="date"
-            class="input"
-            [class.input--error]="isInvalid('fechaRevision')"
-          />
-          @if (isInvalid('fechaRevision')) {
-            <span class="help">{{ getErrorMessage('fechaRevision') }}</span>
-          }
-        </div>
-      </div>
-
-      <div class="actions">
-        @if (isEditMode) {
-          <button type="button" class="delete-button" (click)="openDeleteModal()">
-            Eliminar Producto
+          <button type="button" class="reset-button" (click)="onReset()">Reiniciar</button>
+          <button type="submit" class="submit-button">
+            {{ isEditMode ? 'Guardar' : 'Enviar' }}
           </button>
-        }
-        <button type="button" class="reset-button" (click)="onReset()">Reiniciar</button>
-        <button type="submit" class="submit-button">{{ isEditMode ? 'Guardar' : 'Enviar' }}</button>
-      </div>
-    </form>
+        </div>
+      </form>
+    }
   </div>
 
   <app-delete-confirmation-modal

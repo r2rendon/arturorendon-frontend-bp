@@ -1,16 +1,31 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal, HostListener, ElementRef } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  signal,
+  HostListener,
+  ElementRef,
+  effect,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../api';
 import { Product } from '../../types/api';
 import { ToastrService } from 'ngx-toastr';
 import { firstValueFrom } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DeleteConfirmationModal } from '../delete-confirmation-modal/delete-confirmation-modal';
+import { ProductListSkeletonComponent } from './product-list-skeleton.component';
+import { ProductListEmptyComponent } from './product-list-empty.component';
 
 @Component({
   selector: 'app-product-list',
-  imports: [CommonModule, RouterLink, DeleteConfirmationModal],
+  imports: [
+    CommonModule,
+    RouterLink,
+    DeleteConfirmationModal,
+    ProductListSkeletonComponent,
+    ProductListEmptyComponent,
+  ],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
 })
@@ -20,11 +35,16 @@ export class ProductList {
   private readonly elementRef = inject(ElementRef);
 
   constructor(private apiService: ApiService) {
-    this.fetchData();
+    effect(() => {
+      this.fetchData();
+    });
   }
 
   // Dropdown state
   openDropdownId = signal<string | null>(null);
+
+  // Loading state
+  isLoading = signal(false);
 
   // Delete confirmation modal state
   isDeleteModalOpen = signal(false);
@@ -40,7 +60,6 @@ export class ProductList {
     }
   }
 
-  // Search
   searchQuery = signal<string>('');
 
   // Pagination (frontend-only)
@@ -49,9 +68,16 @@ export class ProductList {
   currentPage = signal(1);
 
   async fetchData() {
-    const response = await firstValueFrom(this.apiService.getProducts());
-    this.products.set(response.data);
-    this.ensureValidCurrentPage();
+    try {
+      this.isLoading.set(true);
+      const response = await firstValueFrom(this.apiService.getProducts());
+      this.products.set(response.data);
+      this.ensureValidCurrentPage();
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   filteredProducts = computed(() => {

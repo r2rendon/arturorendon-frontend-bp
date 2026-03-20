@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -18,10 +18,16 @@ import { mapProductRegisterFormToProduct } from '../../helpers/api';
 import { firstValueFrom, map, of } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DeleteConfirmationModal } from '../delete-confirmation-modal/delete-confirmation-modal';
+import { ProductRegisterFormSkeletonComponent } from './product-register-form-skeleton.component';
 
 @Component({
   selector: 'app-product-register-page',
-  imports: [CommonModule, ReactiveFormsModule, DeleteConfirmationModal],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    DeleteConfirmationModal,
+    ProductRegisterFormSkeletonComponent,
+  ],
   templateUrl: './product-register-page.html',
   styleUrl: './product-register-page.css',
   standalone: true,
@@ -35,6 +41,9 @@ export class ProductRegisterPage {
   toastr = inject(ToastrService);
   isEditMode = false;
   private editingProductId: string | null = null;
+
+  // Loading state for form
+  isLoadingForm = signal(false);
 
   // Delete confirmation modal state
   isDeleteModalOpen = signal(false);
@@ -209,16 +218,25 @@ export class ProductRegisterPage {
   }
 
   private async prefillForEdit(id: string) {
-    const response = await firstValueFrom(this.apiService.getProduct(id));
+    try {
+      this.isLoadingForm.set(true);
+      const response = await firstValueFrom(this.apiService.getProduct(id));
 
-    if (!response) {
-      this.toastr.error('Producto no encontrado.');
+      if (!response) {
+        this.toastr.error('Producto no encontrado.');
+        this.router.navigate(['products']);
+        return;
+      }
+
+      this.patchFormFromProduct(response);
+      this.form.controls.id.disable();
+    } catch (error) {
+      console.error('Error loading product:', error);
+      this.toastr.error('Error al cargar el producto.');
       this.router.navigate(['products']);
-      return;
+    } finally {
+      this.isLoadingForm.set(false);
     }
-
-    this.patchFormFromProduct(response);
-    this.form.controls.id.disable();
   }
 
   private patchFormFromProduct(product: Product) {
