@@ -189,7 +189,7 @@ export class ProductRegisterPage {
       await firstValueFrom(this.apiService.updateProduct(this.editingProductId, productData));
 
       this.toastr.success('¡Producto actualizado exitosamente!');
-      this.router.navigate(['products', this.editingProductId]);
+      this.router.navigate(['/products']);
       return;
     }
 
