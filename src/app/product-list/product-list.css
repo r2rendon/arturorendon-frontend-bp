@@ -11,7 +11,7 @@
   padding: 10px 12px;
   border: 1px solid #d5dae1;
   border-radius: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 0;
   outline: none;
   background: #fff;
   box-sizing: border-box;
@@ -101,8 +101,19 @@
     flex-direction: column;
   }
 
+  .actions-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .search-input {
     width: 100%;
+    margin-bottom: 0;
+  }
+
+  .actions-container button {
+    width: 100%;
+    margin-top: 2px;
   }
 
   .table {
@@ -114,6 +125,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.actions-container button {
+  flex-shrink: 0;
 }
 
 .results-container {

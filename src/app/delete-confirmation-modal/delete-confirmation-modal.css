@@ -1,0 +1,110 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(51, 51, 51, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 48px 40px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.modal-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-message {
+  font-size: 18px;
+  font-weight: 500;
+  color: #1f2a37;
+  margin: 0;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.modal-message strong {
+  font-weight: 600;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.button-cancel,
+.button-confirm {
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 120ms ease;
+  min-width: 140px;
+  text-align: center;
+}
+
+.button-cancel {
+  background: #e5e7eb;
+  color: #1f2a37;
+}
+
+.button-cancel:hover {
+  background: #d1d5db;
+}
+
+.button-cancel:active {
+  background: #b3b9c3;
+}
+
+.button-confirm {
+  background: #fbd34d;
+  color: #1f2a37;
+}
+
+.button-confirm:hover {
+  background: #f7ca1f;
+}
+
+.button-confirm:active {
+  background: #e5b800;
+}
+
+@media (max-width: 600px) {
+  .modal-card {
+    padding: 32px 24px;
+    gap: 24px;
+  }
+
+  .modal-message {
+    font-size: 16px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .button-cancel,
+  .button-confirm {
+    width: 100%;
+    min-width: unset;
+  }
+}

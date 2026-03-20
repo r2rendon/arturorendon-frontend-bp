@@ -1,0 +1,16 @@
+@if (isOpen) {
+  <div class="modal-backdrop" (click)="onBackdropClick($event)">
+    <div class="modal-card">
+      <div class="modal-content">
+        <p class="modal-message">
+          ¿Estás seguro de eliminar el producto <strong>{{ productName }}</strong
+          >?
+        </p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="button-cancel" (click)="onCancel()">Cancelar</button>
+        <button type="button" class="button-confirm" (click)="onConfirm()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+}

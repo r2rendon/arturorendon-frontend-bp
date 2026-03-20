@@ -6,10 +6,11 @@ import { Product } from '../../types/api';
 import { ToastrService } from 'ngx-toastr';
 import { firstValueFrom } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DeleteConfirmationModal } from '../delete-confirmation-modal/delete-confirmation-modal';
 
 @Component({
   selector: 'app-product-list',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, DeleteConfirmationModal],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
 })
@@ -24,6 +25,10 @@ export class ProductList {
 
   // Dropdown state
   openDropdownId = signal<string | null>(null);
+
+  // Delete confirmation modal state
+  isDeleteModalOpen = signal(false);
+  productToDelete = signal<{ id: string; name: string }>({ id: '', name: '' });
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
@@ -115,17 +120,30 @@ export class ProductList {
     this.router.navigate([`/products/${productId}/edit`]);
   }
 
-  async deleteProduct(productId: string) {
+  deleteProduct(productId: string) {
     this.closeDropdown();
-    if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-      try {
-        await firstValueFrom(this.apiService.deleteProduct(productId));
-        this.toastr.success('Producto eliminado exitosamente');
-        this.fetchData();
-      } catch (error) {
-        this.toastr.error('Error al eliminar el producto');
-        console.error(error);
-      }
+    const product = this.products().find((p) => p.id === productId);
+    if (product) {
+      this.productToDelete.set({ id: productId, name: product.name });
+      this.isDeleteModalOpen.set(true);
     }
+  }
+
+  async handleDeleteConfirm() {
+    const productId = this.productToDelete().id;
+    try {
+      await firstValueFrom(this.apiService.deleteProduct(productId));
+      this.toastr.success('Producto eliminado exitosamente');
+      this.isDeleteModalOpen.set(false);
+      this.fetchData();
+    } catch (error) {
+      this.toastr.error('Error al eliminar el producto');
+      console.error(error);
+      this.isDeleteModalOpen.set(false);
+    }
+  }
+
+  handleDeleteCancel() {
+    this.isDeleteModalOpen.set(false);
   }
 }

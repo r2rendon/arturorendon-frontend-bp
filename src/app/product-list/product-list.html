@@ -5,76 +5,82 @@
   </div>
   <div class="table">
     <table class="products-table">
-        <thead>
-          <tr>
-            <th>Logo</th>
-            <th>Nombre del producto</th>
-            <th>Descripción</th>
-            <th>Fecha de liberación</th>
-            <th>Fecha de reestructuración</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (product of visibleProducts(); track product.id) {
-            <tr class="clickable-row">
-              <td>
-                <img class="product-logo" [src]="product.logo" [alt]="product.name" />
-              </td>
-              <td class="cell-ellipsis cell-name" title="{{ product.name }}">{{ product.name }}</td>
-              <td class="cell-ellipsis cell-description" title="{{ product.description }}">
-                {{ product.description }}
-              </td>
-              <td>{{ product.date_release }}</td>
-              <td>{{ product.date_revision }}</td>
-              <td class="actions-cell" (click)="$event.stopPropagation()">
-                <div class="dropdown-container">
-                  <div class="actions-icon" (click)="toggleDropdown(product.id)">
-                    <span class="material-symbols-outlined"> more_vert </span>
-                  </div>
-                  @if (openDropdownId() === product.id) {
-                    <div class="dropdown-menu">
-                      <span class="dropdown-item" (click)="editProduct(product.id)"> Editar </span>
-                      <span class="dropdown-item delete" (click)="deleteProduct(product.id)">
-                        Eliminar Producto
-                      </span>
-                    </div>
-                  }
+      <thead>
+        <tr>
+          <th>Logo</th>
+          <th>Nombre del producto</th>
+          <th>Descripción</th>
+          <th>Fecha de liberación</th>
+          <th>Fecha de reestructuración</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (product of visibleProducts(); track product.id) {
+          <tr class="clickable-row">
+            <td>
+              <img class="product-logo" [src]="product.logo" [alt]="product.name" />
+            </td>
+            <td class="cell-ellipsis cell-name" title="{{ product.name }}">{{ product.name }}</td>
+            <td class="cell-ellipsis cell-description" title="{{ product.description }}">
+              {{ product.description }}
+            </td>
+            <td>{{ product.date_release }}</td>
+            <td>{{ product.date_revision }}</td>
+            <td class="actions-cell" (click)="$event.stopPropagation()">
+              <div class="dropdown-container">
+                <div class="actions-icon" (click)="toggleDropdown(product.id)">
+                  <span class="material-symbols-outlined"> more_vert </span>
                 </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-      <div class="results-container">
-        <p class="results-counter">{{ totalResults }} Resultados</p>
+                @if (openDropdownId() === product.id) {
+                  <div class="dropdown-menu">
+                    <span class="dropdown-item" (click)="editProduct(product.id)"> Editar </span>
+                    <span class="dropdown-item delete" (click)="deleteProduct(product.id)">
+                      Eliminar Producto
+                    </span>
+                  </div>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <div class="results-container">
+      <p class="results-counter">{{ totalResults }} Resultados</p>
 
-        <div class="pager">
-          <button
-            type="button"
-            class="pager-button"
-            (click)="prevPage()"
-            [disabled]="currentPage() === 1"
-          >
-            Prev
-          </button>
-          <span class="pager-status">Página {{ currentPage() }} / {{ totalPages }}</span>
-          <button
-            type="button"
-            class="pager-button"
-            (click)="nextPage()"
-            [disabled]="currentPage() === totalPages"
-          >
-            Next
-          </button>
-        </div>
-
-        <select [value]="pageSize()" (change)="onPageSizeChange($event)">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
-        </select>
+      <div class="pager">
+        <button
+          type="button"
+          class="pager-button"
+          (click)="prevPage()"
+          [disabled]="currentPage() === 1"
+        >
+          Prev
+        </button>
+        <span class="pager-status">Página {{ currentPage() }} / {{ totalPages }}</span>
+        <button
+          type="button"
+          class="pager-button"
+          (click)="nextPage()"
+          [disabled]="currentPage() === totalPages"
+        >
+          Next
+        </button>
       </div>
+
+      <select [value]="pageSize()" (change)="onPageSizeChange($event)">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+      </select>
     </div>
   </div>
+</div>
 
+<app-delete-confirmation-modal
+  [isOpen]="isDeleteModalOpen()"
+  [productName]="productToDelete().name"
+  (confirm)="handleDeleteConfirm()"
+  (cancel)="handleDeleteCancel()"
+></app-delete-confirmation-modal>

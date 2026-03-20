@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -17,10 +17,11 @@ import { Product } from '../../types/api';
 import { mapProductRegisterFormToProduct } from '../../helpers/api';
 import { firstValueFrom, map, of } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DeleteConfirmationModal } from '../delete-confirmation-modal/delete-confirmation-modal';
 
 @Component({
   selector: 'app-product-register-page',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, DeleteConfirmationModal],
   templateUrl: './product-register-page.html',
   styleUrl: './product-register-page.css',
   standalone: true,
@@ -34,6 +35,10 @@ export class ProductRegisterPage {
   toastr = inject(ToastrService);
   isEditMode = false;
   private editingProductId: string | null = null;
+
+  // Delete confirmation modal state
+  isDeleteModalOpen = signal(false);
+  productToDelete = signal<string>('');
 
   // Custom validators
   private minDateValidator(control: AbstractControl): ValidationErrors | null {
@@ -225,5 +230,29 @@ export class ProductRegisterPage {
       fechaLiberacion: product.date_release,
       fechaRevision: product.date_revision,
     });
+  }
+
+  openDeleteModal() {
+    this.productToDelete.set(this.form.controls.nombre.value);
+    this.isDeleteModalOpen.set(true);
+  }
+
+  async handleDeleteConfirm() {
+    if (!this.editingProductId) return;
+
+    try {
+      await firstValueFrom(this.apiService.deleteProduct(this.editingProductId));
+      this.toastr.success('Producto eliminado exitosamente');
+      this.isDeleteModalOpen.set(false);
+      this.router.navigate(['products']);
+    } catch (error) {
+      this.toastr.error('Error al eliminar el producto');
+      console.error(error);
+      this.isDeleteModalOpen.set(false);
+    }
+  }
+
+  handleDeleteCancel() {
+    this.isDeleteModalOpen.set(false);
   }
 }
