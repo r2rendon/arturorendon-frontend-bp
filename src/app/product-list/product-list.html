@@ -1,40 +1,10 @@
 <div class="product-list-container">
-  <ng-container *ngIf="isDetailMode(); else listMode">
-    <div class="table">
-      <ng-container *ngIf="selectedProduct() as product; else notFound">
-        <div class="detail-header">
-          <img class="product-logo" [src]="product.logo" [alt]="product.name" />
-          <div class="detail-title">
-            <h2 class="detail-name">{{ product.name }}</h2>
-            <p class="detail-id">ID: {{ product.id }}</p>
-          </div>
-        </div>
-
-        <div class="detail-body">
-          <h3>Descripción</h3>
-          <p class="detail-description">{{ product.description }}</p>
-
-          <div class="detail-actions">
-            <button type="button" [routerLink]="['/products', product.id, 'edit']">Editar</button>
-            <button type="button" [routerLink]="['/products']">Volver</button>
-          </div>
-        </div>
-      </ng-container>
-
-      <ng-template #notFound>
-        <p class="not-found">Producto no encontrado.</p>
-        <button type="button" [routerLink]="['/products']">Volver</button>
-      </ng-template>
-    </div>
-  </ng-container>
-
-  <ng-template #listMode>
-    <div class="actions-container">
-      <input type="text" placeholder="Search" class="search-input" />
-      <button [routerLink]="['/products/register']">Agregar producto</button>
-    </div>
-    <div class="table">
-      <table class="products-table">
+  <div class="actions-container">
+    <input type="text" placeholder="Search" class="search-input" (input)="onSearchChange($event)" />
+    <button [routerLink]="['/products/register']">Agregar producto</button>
+  </div>
+  <div class="table">
+    <table class="products-table">
         <thead>
           <tr>
             <th>Logo</th>
@@ -42,11 +12,12 @@
             <th>Descripción</th>
             <th>Fecha de liberación</th>
             <th>Fecha de reestructuración</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           @for (product of visibleProducts(); track product.id) {
-            <tr class="clickable-row" [routerLink]="[`/products/${product.id}/edit`]">
+            <tr class="clickable-row">
               <td>
                 <img class="product-logo" [src]="product.logo" [alt]="product.name" />
               </td>
@@ -56,6 +27,21 @@
               </td>
               <td>{{ product.date_release }}</td>
               <td>{{ product.date_revision }}</td>
+              <td class="actions-cell" (click)="$event.stopPropagation()">
+                <div class="dropdown-container">
+                  <div class="actions-icon" (click)="toggleDropdown(product.id)">
+                    <span class="material-symbols-outlined"> more_vert </span>
+                  </div>
+                  @if (openDropdownId() === product.id) {
+                    <div class="dropdown-menu">
+                      <span class="dropdown-item" (click)="editProduct(product.id)"> Editar </span>
+                      <span class="dropdown-item delete" (click)="deleteProduct(product.id)">
+                        Eliminar Producto
+                      </span>
+                    </div>
+                  }
+                </div>
+              </td>
             </tr>
           }
         </tbody>
@@ -90,5 +76,5 @@
         </select>
       </div>
     </div>
-  </ng-template>
-</div>
+  </div>
+

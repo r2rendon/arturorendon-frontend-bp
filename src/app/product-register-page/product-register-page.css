@@ -8,6 +8,38 @@
   box-sizing: border-box;
 }
 
+.header-with-back {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.back-button {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  border-radius: 50%;
+  font-size: 28px;
+  color: #1f2a37;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #e8e8e8;
+}
+
+.back-button:active {
+  background-color: #d0d0d0;
+}
+
 .register-card h2 {
   margin: 0;
   text-align: center;

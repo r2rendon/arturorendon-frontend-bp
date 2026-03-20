@@ -47,9 +47,7 @@ export class ProductRegisterPage {
     }),
   });
 
-  constructor(private apiService: ApiService) {}
-
-  ngOnInit() {
+  constructor(private apiService: ApiService) {
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       const id = params.get('id');
       this.isEditMode = !!id;
@@ -105,6 +103,10 @@ export class ProductRegisterPage {
       fechaLiberacion: '',
       fechaRevision: '',
     });
+  }
+
+  goBack(): void {
+    this.router.navigate(['/products']);
   }
 
   private async prefillForEdit(id: string) {

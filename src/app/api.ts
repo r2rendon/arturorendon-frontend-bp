@@ -69,4 +69,17 @@ export class ApiService {
         ),
       );
   }
+
+  deleteProduct(id: string): Observable<void> {
+    return this.http
+      .delete<void>(`${API_ENDPOINTS.getProducts}/${id}`)
+      .pipe(
+        catchError((err) =>
+          this.baseErrorHandling(
+            err,
+            'Lo sentimos, el producto no pudo ser eliminado. Favor intentar nuevamente.',
+          ),
+        ),
+      );
+  }
 }

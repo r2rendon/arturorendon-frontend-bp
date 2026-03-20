@@ -1,6 +1,9 @@
 <div class="register-page">
   <div class="register-card">
-    <h2>{{ isEditMode ? 'Editar producto' : 'Formulario de Registro' }}</h2>
+    <div class="header-with-back">
+      <span class="back-button" (click)="goBack()" title="Volver a la lista">←</span>
+      <h2>{{ isEditMode ? 'Editar producto' : 'Formulario de Registro' }}</h2>
+    </div>
 
     <form class="register-form" [formGroup]="form" (submit)="onSubmit($event)">
       <div class="form-grid">
